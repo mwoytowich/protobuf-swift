@@ -57,7 +57,7 @@ public class GeneratedMessageBuilder:AbstractMessageBuilder
     {
         get
         {
-            NSException(name:"ImproperSubclassing", reason:"", userInfo: nil).raise()
+            ProtoResult<GeneratedMessage>.Failure("Error: ImproperSubclassing").printDebugErrorString()
             return GeneratedMessage()
         }
         
@@ -76,22 +76,24 @@ public class GeneratedMessageBuilder:AbstractMessageBuilder
         }
         
     }
-    public func checkInitialized()
+    public func checkInitialized() -> ProtoResult<Bool>
     {
         let result = internalGetResult
-        if (!result.isInitialized())
+        if (result.isInitialized())
         {
-            NSException(name:"UninitializedMessage", reason:"", userInfo: nil).raise()
+            return ProtoResult.Success(true)
         }
+        return ProtoResult.Failure("UninitializedMessage")
     }
     
-    public func checkInitializedParsed()
+    public func checkInitializedParsed() -> ProtoResult<Bool>
     {
         let result = internalGetResult
-        if (!result.isInitialized())
+        if (result.isInitialized())
         {
-            NSException(name:"InvalidProtocolBuffer", reason:"", userInfo: nil).raise()
+            return ProtoResult.Success(true)
         }
+        return ProtoResult.Failure("InvalidProtocolBuffer")
     }
     
     override public func isInitialized() -> Bool

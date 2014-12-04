@@ -307,18 +307,19 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
     override public var internalGetResult:ExtendableMessage {
         get
         {
-            NSException(name:"ImproperSubclassing", reason:"", userInfo: nil).raise()
+            ProtoResult<ExtendableMessage>.Failure("Error: ImproperSubclassing").printDebugErrorString()
             return ExtendableMessage()
         }
         
     }
     
     
-    override public func checkInitialized()
+    override public func checkInitialized() ->
     {
         let result = internalGetResult
         if (!result.isInitialized())
         {
+            
             NSException(name:"UninitializedMessage", reason:"", userInfo: nil).raise()
         }
     }
@@ -372,7 +373,8 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         var message = internalGetResult
         message.ensureExtensionIsRegistered(extensions)
         if (extensions.isRepeated) {
-            NSException(name:"IllegalArgument", reason:"Must call addExtension() for repeated types.", userInfo: nil).raise()
+            debugPrintln("Error: Must call addExtension() for repeated types.")
+            return self
         }
         message.extensionMap[extensions.fieldNumber] = value
         return self
@@ -384,7 +386,8 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         message.ensureExtensionIsRegistered(extensions)
         
         if (!extensions.isRepeated) {
-            NSException(name:"IllegalArgument", reason:"Must call setExtension() for singular types.", userInfo: nil).raise()
+            debugPrintln("Error: Must call setExtension() for singular types.")
+            return self
         }
         
         var fieldNumber = extensions.fieldNumber
@@ -408,7 +411,8 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         var message = internalGetResult
         message.ensureExtensionIsRegistered(extensions)
         if (!extensions.isRepeated) {
-            NSException(name:"IllegalArgument", reason:"Must call setExtension() for singular types.", userInfo: nil).raise()
+            debugPrintln("Error: Must call setExtension() for singular types")
+            return self
         }
         var fieldNumber = extensions.fieldNumber
         if let val = value as? GeneratedMessage
@@ -445,7 +449,8 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
     public func mergeExtensionFields(other:ExtendableMessage) {
         var thisMessage = internalGetResult
         if (thisMessage.className() != other.className()) {
-            NSException(name:"IllegalArgument", reason:"Cannot merge extensions from a different type", userInfo: nil).raise()
+            debugPrintln("Error: Cannot merge extensions from a different type")
+            return
         }
         if other.extensionMap.count > 0 {
             var registry = other.extensionRegistry

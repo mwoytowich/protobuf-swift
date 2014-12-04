@@ -59,6 +59,43 @@ public protocol MessageBuilder: class
      func mergeFromInputStream(input:NSInputStream, extensionRegistry:ExtensionRegistry) -> Self
 }
 
+public enum ProtoResult<T> {
+    case Success(T)
+    case Failure(String)
+    
+    func getSuccessValue()->T!
+    {
+        switch self
+        {
+        case .Success(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+    func raiseDebugException()
+    {
+        switch self
+        {
+        case .Failure(let errStr):
+            NSException(name:"Protobuf Exception", reason:errStr, userInfo: nil).raise()
+        default:
+            return
+        }
+    }
+    func printDebugErrorString()
+    {
+        switch self
+        {
+        case .Failure(let errStr):
+            debugPrintln(errStr)
+        default:
+            return
+        }
+    }
+}
+
 public func == (lhs: AbstractMessage, rhs: AbstractMessage) -> Bool
 {
     return true
@@ -92,12 +129,12 @@ public class AbstractMessage:Equatable, Hashable, Message {
     
     public func writeDescriptionTo(inout output:String, indent:String)
     {
-        NSException(name:"Override", reason:"", userInfo: nil).raise()
+        ProtoResult<String>.Failure("Error: Override").printDebugErrorString()
     }
     
     public func writeToCodedOutputStream(output: CodedOutputStream)
     {
-         NSException(name:"Override", reason:"", userInfo: nil).raise()
+        ProtoResult<String>.Failure("Error: Override").printDebugErrorString()
     }
     
     public func writeToOutputStream(output: NSOutputStream)
@@ -188,8 +225,8 @@ public class AbstractMessageBuilder:MessageBuilder
     
     public func mergeFromCodedInputStream(input:CodedInputStream, extensionRegistry:ExtensionRegistry) -> Self
     {
-        NSException(name:"ImproperSubclassing", reason:"", userInfo: nil).raise()
-        return  self
+        ProtoResult<AbstractMessage>.Failure("Error: ImproperSubclassing").printDebugErrorString()
+        return self
     }
 
     

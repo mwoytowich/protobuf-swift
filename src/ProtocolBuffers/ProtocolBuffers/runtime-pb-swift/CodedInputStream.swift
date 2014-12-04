@@ -57,25 +57,30 @@ public class CodedInputStream
         recursionLimit = DEFAULT_RECURSION_LIMIT
         sizeLimit = DEFAULT_SIZE_LIMIT
     }
-    private func isAtEnd() ->Bool {
-        return ((bufferPos == bufferSize) && !refillBuffer(false))
+    private func isAtEnd() ->ProtoResult<Bool> {
+        
+        var protoResult  = refillBuffer(false)
+        if let value = protoResult.getSuccessValue()
+        {
+            return ProtoResult<Bool>.Success(((bufferPos == bufferSize) && !value))
+        }
+        return protoResult
     }
     
-    private func refillBuffer(mustSucceed:Bool) -> Bool
+    private func refillBuffer(mustSucceed:Bool) -> ProtoResult<Bool>
     {
         if bufferPos < bufferSize
         {
-            NSException(name:"IllegalState", reason:"refillBuffer called when buffer wasn't empty.", userInfo: nil).raise()
+            return ProtoResult<Bool>.Failure("IllegalState: refillBuffer called when buffer wasn't empty.")
         }
         
         if (totalBytesRetired + bufferSize == currentLimit) {
             if (mustSucceed) {
-                NSException(name:"InvalidProtocolBuffer:", reason:"truncatedMessage", userInfo: nil).raise()
-                
+                return ProtoResult<Bool>.Failure("InvalidProtocolBuffer: truncatedMessage")
             }
             else
             {
-                return false
+                return ProtoResult<Bool>.Success(false)
             }
         }
         
@@ -97,11 +102,11 @@ public class CodedInputStream
             bufferSize = 0
             if mustSucceed
             {
-                NSException(name:"InvalidProtocolBuffer:", reason:"truncatedMessage", userInfo: nil).raise()
+                return ProtoResult<Bool>.Failure("InvalidProtocolBuffer: truncatedMessage")
             }
             else
             {
-                return false
+                return ProtoResult<Bool>.Success(false)
             }
         }
         else
@@ -110,24 +115,23 @@ public class CodedInputStream
             var totalBytesRead:Int32 = totalBytesRetired + bufferSize + bufferSizeAfterLimit
             if (totalBytesRead > sizeLimit || totalBytesRead < 0)
             {
-                NSException(name:"InvalidProtocolBuffer:", reason:"sizeLimitExceeded", userInfo: nil).raise()
+                return ProtoResult<Bool>.Failure("InvalidProtocolBuffer: sizeLimitExceeded")
             }
-            return true
+            return ProtoResult<Bool>.Success(true)
         }
         
-        return false
+        return ProtoResult<Bool>.Success(false)
     }
     
     
-    public func readRawData(size:Int32) -> [Byte] {
+    public func readRawData(size:Int32) -> ProtoResult<[Byte]> {
         if (size < 0) {
-            NSException(name:"InvalidProtocolBuffer", reason:"negativeSize", userInfo: nil).raise()
-            
+            return ProtoResult<[Byte]>.Failure("InvalidProtocolBuffer: negativeSize")
         }
         
         if (totalBytesRetired + bufferPos + size > currentLimit) {
             skipRawData(currentLimit - totalBytesRetired - bufferPos)
-            NSException(name:"InvalidProtocolBuffer", reason:"truncatedMessage", userInfo: nil).raise()
+            return ProtoResult<[Byte]>.Failure("InvalidProtocolBuffer: truncatedMessage")
         }
         
         if (size <= bufferSize - bufferPos) {
@@ -135,7 +139,7 @@ public class CodedInputStream
             var data = [Byte](count: Int(size), repeatedValue: 0)
             memcpy(&data, &buffer + Int(bufferPos), UInt(size))
             bufferPos += size
-            return data
+            return ProtoResult<[Byte]>.Success(data)
         }
         else if (size < BUFFER_SIZE) {
             
@@ -156,7 +160,7 @@ public class CodedInputStream
             
             memcpy(&bytes + Int(pos), &buffer, UInt(size - pos))
             bufferPos = size - pos
-            return bytes
+            return ProtoResult<[Byte]>.Success(bytes)
             
         }
         else
@@ -185,7 +189,7 @@ public class CodedInputStream
                         n = input!.read(&chunk + Int(pos), maxLength:chunk.count - Int(pos))
                     }
                     if (n <= 0) {
-                        NSException(name:"InvalidProtocolBuffer", reason:"truncatedMessage", userInfo: nil).raise()
+                        return ProtoResult<[Byte]>.Failure("InvalidProtocolBuffer: truncatedMessage")
                     }
                     totalBytesRetired += n
                     pos += n
@@ -204,7 +208,7 @@ public class CodedInputStream
                 pos += chunk.count
             }
             
-            return bytes
+            return ProtoResult<[Byte]>.Success(bytes)
             
         }
     }
