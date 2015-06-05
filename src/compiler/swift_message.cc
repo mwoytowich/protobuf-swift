@@ -91,9 +91,6 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
             sort(fields, fields + descriptor->field_count(), FieldOrderingByType());
             return fields;
         }
-        string UniqueFileScopeIdentifier(const Descriptor* descriptor) {
-            return "static_" + StringReplace(descriptor->full_name(), ".", "_", true);
-        }
         
         static bool HasRequiredFields(
                                       const Descriptor* type,
@@ -137,30 +134,10 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
     MessageGenerator::~MessageGenerator() {
     }
     
-    
-    //  void MessageGenerator::GenerateStaticVariablesHeader(io::Printer* printer) {
-    //    map<string, string> vars;
-    //    vars["identifier"] = UniqueFileScopeIdentifier(descriptor_);
-    //    vars["index"] = SimpleItoa(descriptor_->index());
-    //    vars["classname"] = ClassName(descriptor_);
-    //    if (descriptor_->containing_type() != NULL) {
-    //      vars["parent"] = UniqueFileScopeIdentifier(descriptor_->containing_type());
-    //    }
-    //
-    //    for (int i = 0; i < descriptor_->nested_type_count(); i++) {
-    //      MessageGenerator(descriptor_->nested_type(i)).GenerateStaticVariablesHeader(printer);
-    //    }
-    //  }
-    
-    
     void MessageGenerator::GenerateStaticVariablesInitialization(io::Printer* printer) {
         map<string, string> vars;
-        vars["identifier"] = UniqueFileScopeIdentifier(descriptor_);
         vars["index"] = SimpleItoa(descriptor_->index());
         vars["classname"] = ClassName(descriptor_);
-        if (descriptor_->containing_type() != NULL) {
-            vars["parent"] = UniqueFileScopeIdentifier(descriptor_->containing_type());
-        }
         
         for (int i = 0; i < descriptor_->extension_count(); i++) {
             ExtensionGenerator(ClassNameExtensions(descriptor_), descriptor_->extension(i)).GenerateInitializationSource(printer);
@@ -173,12 +150,8 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
     
     void MessageGenerator::GenerateStaticVariablesSource(io::Printer* printer) {
         map<string, string> vars;
-        vars["identifier"] = UniqueFileScopeIdentifier(descriptor_);
         vars["index"] = SimpleItoa(descriptor_->index());
         vars["classname"] = ClassName(descriptor_);
-        if (descriptor_->containing_type() != NULL) {
-            vars["parent"] = UniqueFileScopeIdentifier(descriptor_->containing_type());
-        }
         
         for (int i = 0; i < descriptor_->extension_count(); i++) {
             ExtensionGenerator(ClassNameExtensions(descriptor_), descriptor_->extension(i)).GenerateFieldsSource(printer);
@@ -190,12 +163,8 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
     
     void MessageGenerator::GenerateGlobalStaticVariablesSource(io::Printer* printer, string rootclass) {
         map<string, string> vars;
-        vars["identifier"] = UniqueFileScopeIdentifier(descriptor_);
         vars["index"] = SimpleItoa(descriptor_->index());
         vars["classname"] = ClassName(descriptor_);
-        if (descriptor_->containing_type() != NULL) {
-            vars["parent"] = UniqueFileScopeIdentifier(descriptor_->containing_type());
-        }
         for (int i = 0; i < descriptor_->extension_count(); i++) {
             ExtensionGenerator(ClassNameExtensions(descriptor_), descriptor_->extension(i)).GenerateFieldsGetterSource(printer, rootclass);
         }
@@ -231,16 +200,16 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         
         scoped_array<const FieldDescriptor*> sorted_fields(SortFieldsByType(descriptor_));
         
-        string classNamesMessage = ClassNameMessage(descriptor_);
+        string classNamesMessage = ClassName(descriptor_);
         
         if (descriptor_->extension_range_count() > 0) {
             printer->Print(
-                           "final $acontrol$ class $classname$ : ExtendableMessage, GeneratedMessageProtocol {\n",
+                           "final $acontrol$ class $classname$ : ExtendableMessage, GeneratedMessageProtocol, Hashable {\n",
                            "classname", classNamesMessage,
                            "acontrol", GetAccessControlType(descriptor_->file()));
         } else {
             printer->Print(
-                           "final $acontrol$ class $classname$ : GeneratedMessage, GeneratedMessageProtocol {\n",
+                           "final $acontrol$ class $classname$ : GeneratedMessage, GeneratedMessageProtocol, Hashable {\n",
                            "classname", classNamesMessage,
                            "acontrol", GetAccessControlType(descriptor_->file()));
         }
@@ -320,7 +289,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         
         GenerateParseFromMethodsSource(printer);
         
-        string classNames = ClassName(descriptor_);
+        string classNames = ClassNameReturedType(descriptor_);
         
         printer->Print(
                        
@@ -500,23 +469,18 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         sort(sorted_extensions.begin(), sorted_extensions.end(),
              ExtensionRangeOrdering());
         
-        string classNames = ClassName(descriptor_);
+        string classNames = ClassNameReturedType(descriptor_);
         
-        printer->Print(
-                       "$acontrol$ func == (lhs: $classname$, rhs: $classname$) -> Bool {\n",
+        printer->Print("$acontrol$ func == (lhs: $classname$, rhs: $classname$) -> Bool {\n",
                        "classname", classNames,
                         "acontrol", GetAccessControlType(descriptor_->file()));
         printer->Indent();
         
         
-        printer->Print(
-                       "if (lhs === rhs) {\n"
+        printer->Print("if (lhs === rhs) {\n"
                        "  return true\n"
                        "}\n"
                        );
-        
-        
-        
         
         // Merge the fields and the extension ranges, both sorted by field number.
         printer->Print("var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)\n");
@@ -551,6 +515,10 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         
         printer->Outdent();
         printer->Print("}\n\n");
+        
+        for (int j = 0; j < descriptor_->nested_type_count(); j++) {
+             MessageGenerator(descriptor_->nested_type(j)).GenerateMessageIsEqualSource(printer);
+        }
     }
     
     
@@ -605,7 +573,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
     
     void MessageGenerator::GenerateParseFromMethodsSource(io::Printer* printer) {
         
-        string classNames = ClassName(descriptor_);
+        string classNames = ClassNameReturedType(descriptor_);
         printer->Print(
                        "$acontrol$ class func parseFromData(data:NSData) -> $classname$ {\n"
                        "  return $classname$.builder().mergeFromData(data, extensionRegistry:$fileName$.sharedInstance.extensionRegistry).build()\n"
@@ -693,18 +661,18 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         if (descriptor_->extension_range_count() > 0) {
             printer->Print(
                            "final $acontrol$ class $classname$Builder : ExtendableMessageBuilder {\n",
-                           "classname", ClassNameMessage(descriptor_),
+                           "classname", ClassName(descriptor_),
                            "acontrol", GetAccessControlType(descriptor_->file()));
         } else {
             printer->Print(
                            "final $acontrol$ class $classname$Builder : GeneratedMessageBuilder {\n",
-                           "classname", ClassNameMessage(descriptor_),
+                           "classname", ClassName(descriptor_),
                            "acontrol", GetAccessControlType(descriptor_->file()));
         }
         
         printer->Indent();
         
-        string builderClassNames = ClassName(descriptor_);
+        string builderClassNames = ClassNameReturedType(descriptor_);
         
         printer->Print(
                        "private var builderResult:$classname$\n\n"
@@ -730,7 +698,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
     
     void MessageGenerator::GenerateCommonBuilderMethodsSource(io::Printer* printer) {
         
-        string classNames = ClassName(descriptor_);
+        string classNames = ClassNameReturedType(descriptor_);
         if (descriptor_->extension_range_count() > 0) {
             printer->Print(
                            "override $acontrol$ var internalGetResult:ExtendableMessage {\n"
@@ -780,7 +748,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
                        "classname", classNames);
         
         printer->Print("$acontrol$ func mergeFrom(other:$classname$) -> $classname$Builder {\n",
-                       "classname", ClassName(descriptor_),
+                       "classname", classNames,
                        "acontrol", GetAccessControlType(descriptor_->file()));
         // Optimization:  If other is the default instance, we know none of its
         //   fields are set so we can skip the merge.
@@ -814,7 +782,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
     void MessageGenerator::GenerateBuilderParsingMethodsSource(io::Printer* printer) {
         scoped_array<const FieldDescriptor*> sorted_fields(SortFieldsByNumber(descriptor_));
         
-        string classNames = ClassName(descriptor_);
+        string classNames = ClassNameReturedType(descriptor_);
         
         printer->Print(
                        "$acontrol$ override func mergeFromCodedInputStream(input:CodedInputStream) ->$classname$Builder {\n"

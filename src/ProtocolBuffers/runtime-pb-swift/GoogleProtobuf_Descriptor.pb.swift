@@ -32,16 +32,6 @@ public func == (lhs: Google.Protobuf.FileDescriptorProto, rhs: Google.Protobuf.F
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
-public func == (lhs: Google.Protobuf.DescriptorProto.ExtensionRange, rhs: Google.Protobuf.DescriptorProto.ExtensionRange) -> Bool {
-  if (lhs === rhs) {
-    return true
-  }
-  var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
-  fieldCheck = fieldCheck && (lhs.hasStart == rhs.hasStart) && (!lhs.hasStart || lhs.start == rhs.start)
-  fieldCheck = fieldCheck && (lhs.hasEnd == rhs.hasEnd) && (!lhs.hasEnd || lhs.end == rhs.end)
-  return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
-}
-
 public func == (lhs: Google.Protobuf.DescriptorProto, rhs: Google.Protobuf.DescriptorProto) -> Bool {
   if (lhs === rhs) {
     return true
@@ -55,6 +45,16 @@ public func == (lhs: Google.Protobuf.DescriptorProto, rhs: Google.Protobuf.Descr
   fieldCheck = fieldCheck && (lhs.extension_ == rhs.extension_)
   fieldCheck = fieldCheck && (lhs.hasOptions == rhs.hasOptions) && (!lhs.hasOptions || lhs.options == rhs.options)
   fieldCheck = fieldCheck && (lhs.oneofDecl == rhs.oneofDecl)
+  return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
+}
+
+public func == (lhs: Google.Protobuf.DescriptorProto.ExtensionRange, rhs: Google.Protobuf.DescriptorProto.ExtensionRange) -> Bool {
+  if (lhs === rhs) {
+    return true
+  }
+  var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
+  fieldCheck = fieldCheck && (lhs.hasStart == rhs.hasStart) && (!lhs.hasStart || lhs.start == rhs.start)
+  fieldCheck = fieldCheck && (lhs.hasEnd == rhs.hasEnd) && (!lhs.hasEnd || lhs.end == rhs.end)
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
@@ -224,16 +224,6 @@ public func == (lhs: Google.Protobuf.MethodOptions, rhs: Google.Protobuf.MethodO
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
-public func == (lhs: Google.Protobuf.UninterpretedOption.NamePart, rhs: Google.Protobuf.UninterpretedOption.NamePart) -> Bool {
-  if (lhs === rhs) {
-    return true
-  }
-  var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
-  fieldCheck = fieldCheck && (lhs.hasNamePart == rhs.hasNamePart) && (!lhs.hasNamePart || lhs.namePart == rhs.namePart)
-  fieldCheck = fieldCheck && (lhs.hasIsExtension == rhs.hasIsExtension) && (!lhs.hasIsExtension || lhs.isExtension == rhs.isExtension)
-  return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
-}
-
 public func == (lhs: Google.Protobuf.UninterpretedOption, rhs: Google.Protobuf.UninterpretedOption) -> Bool {
   if (lhs === rhs) {
     return true
@@ -249,15 +239,13 @@ public func == (lhs: Google.Protobuf.UninterpretedOption, rhs: Google.Protobuf.U
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
-public func == (lhs: Google.Protobuf.SourceCodeInfo.Location, rhs: Google.Protobuf.SourceCodeInfo.Location) -> Bool {
+public func == (lhs: Google.Protobuf.UninterpretedOption.NamePart, rhs: Google.Protobuf.UninterpretedOption.NamePart) -> Bool {
   if (lhs === rhs) {
     return true
   }
   var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
-  fieldCheck = fieldCheck && (lhs.path == rhs.path)
-  fieldCheck = fieldCheck && (lhs.span == rhs.span)
-  fieldCheck = fieldCheck && (lhs.hasLeadingComments == rhs.hasLeadingComments) && (!lhs.hasLeadingComments || lhs.leadingComments == rhs.leadingComments)
-  fieldCheck = fieldCheck && (lhs.hasTrailingComments == rhs.hasTrailingComments) && (!lhs.hasTrailingComments || lhs.trailingComments == rhs.trailingComments)
+  fieldCheck = fieldCheck && (lhs.hasNamePart == rhs.hasNamePart) && (!lhs.hasNamePart || lhs.namePart == rhs.namePart)
+  fieldCheck = fieldCheck && (lhs.hasIsExtension == rhs.hasIsExtension) && (!lhs.hasIsExtension || lhs.isExtension == rhs.isExtension)
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
@@ -267,6 +255,18 @@ public func == (lhs: Google.Protobuf.SourceCodeInfo, rhs: Google.Protobuf.Source
   }
   var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
   fieldCheck = fieldCheck && (lhs.location == rhs.location)
+  return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
+}
+
+public func == (lhs: Google.Protobuf.SourceCodeInfo.Location, rhs: Google.Protobuf.SourceCodeInfo.Location) -> Bool {
+  if (lhs === rhs) {
+    return true
+  }
+  var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
+  fieldCheck = fieldCheck && (lhs.path == rhs.path)
+  fieldCheck = fieldCheck && (lhs.span == rhs.span)
+  fieldCheck = fieldCheck && (lhs.hasLeadingComments == rhs.hasLeadingComments) && (!lhs.hasLeadingComments || lhs.leadingComments == rhs.leadingComments)
+  fieldCheck = fieldCheck && (lhs.hasTrailingComments == rhs.hasTrailingComments) && (!lhs.hasTrailingComments || lhs.trailingComments == rhs.trailingComments)
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
@@ -288,7 +288,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class FileDescriptorSet : GeneratedMessage, GeneratedMessageProtocol {
+  final public class FileDescriptorSet : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var file:Array<Google.Protobuf.FileDescriptorProto>  = Array<Google.Protobuf.FileDescriptorProto>()
     required public init() {
          super.init()
@@ -479,7 +479,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class FileDescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class FileDescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasName:Bool = false
     public private(set) var name:String = ""
 
@@ -1168,12 +1168,12 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class DescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class DescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
 
 
     //Nested type declaration start
 
-      final public class ExtensionRange : GeneratedMessage, GeneratedMessageProtocol {
+      final public class ExtensionRange : GeneratedMessage, GeneratedMessageProtocol, Hashable {
         public private(set) var hasStart:Bool = false
         public private(set) var start:Int32 = Int32(0)
 
@@ -1940,7 +1940,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class FieldDescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class FieldDescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
 
 
       //Enum type declaration start 
@@ -1988,9 +1988,9 @@ public extension Google.Protobuf {
     public private(set) var hasNumber:Bool = false
     public private(set) var number:Int32 = Int32(0)
 
-    public private(set) var label:Google.Protobuf.FieldDescriptorProto.Label = Google.Protobuf.FieldDescriptorProto.Label.LabelOptional
+    public private(set) var label:FieldDescriptorProto.Label = FieldDescriptorProto.Label.LabelOptional
     public private(set) var hasLabel:Bool = false
-    public private(set) var types:Google.Protobuf.FieldDescriptorProto.Types = Google.Protobuf.FieldDescriptorProto.Types.TypeDouble
+    public private(set) var types:FieldDescriptorProto.Types = FieldDescriptorProto.Types.TypeDouble
     public private(set) var hasTypes:Bool = false
     public private(set) var hasTypeName:Bool = false
     public private(set) var typeName:String = ""
@@ -2266,7 +2266,7 @@ public extension Google.Protobuf {
               return builderResult.hasLabel
           }
       }
-      public var label:Google.Protobuf.FieldDescriptorProto.Label {
+      public var label:FieldDescriptorProto.Label {
           get {
               return builderResult.label
           }
@@ -2275,7 +2275,7 @@ public extension Google.Protobuf {
               builderResult.label = value
           }
       }
-      public func setLabel(value:Google.Protobuf.FieldDescriptorProto.Label)-> Google.Protobuf.FieldDescriptorProtoBuilder {
+      public func setLabel(value:FieldDescriptorProto.Label)-> Google.Protobuf.FieldDescriptorProtoBuilder {
         self.label = value
         return self
       }
@@ -2289,7 +2289,7 @@ public extension Google.Protobuf {
               return builderResult.hasTypes
           }
       }
-      public var types:Google.Protobuf.FieldDescriptorProto.Types {
+      public var types:FieldDescriptorProto.Types {
           get {
               return builderResult.types
           }
@@ -2298,7 +2298,7 @@ public extension Google.Protobuf {
               builderResult.types = value
           }
       }
-      public func setTypes(value:Google.Protobuf.FieldDescriptorProto.Types)-> Google.Protobuf.FieldDescriptorProtoBuilder {
+      public func setTypes(value:FieldDescriptorProto.Types)-> Google.Protobuf.FieldDescriptorProtoBuilder {
         self.types = value
         return self
       }
@@ -2508,7 +2508,7 @@ public extension Google.Protobuf {
 
         case 32 :
           let valueIntlabel = input.readEnum()
-          if let enumslabel = Google.Protobuf.FieldDescriptorProto.Label(rawValue:valueIntlabel){
+          if let enumslabel = FieldDescriptorProto.Label(rawValue:valueIntlabel){
                label = enumslabel
           } else {
                unknownFieldsBuilder.mergeVarintField(4, value:Int64(valueIntlabel))
@@ -2516,7 +2516,7 @@ public extension Google.Protobuf {
 
         case 40 :
           let valueInttypes = input.readEnum()
-          if let enumstypes = Google.Protobuf.FieldDescriptorProto.Types(rawValue:valueInttypes){
+          if let enumstypes = FieldDescriptorProto.Types(rawValue:valueInttypes){
                types = enumstypes
           } else {
                unknownFieldsBuilder.mergeVarintField(5, value:Int64(valueInttypes))
@@ -2549,7 +2549,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class OneofDescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class OneofDescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasName:Bool = false
     public private(set) var name:String = ""
 
@@ -2733,7 +2733,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class EnumDescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class EnumDescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasName:Bool = false
     public private(set) var name:String = ""
 
@@ -3036,7 +3036,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class EnumValueDescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class EnumValueDescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasName:Bool = false
     public private(set) var name:String = ""
 
@@ -3332,7 +3332,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class ServiceDescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class ServiceDescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasName:Bool = false
     public private(set) var name:String = ""
 
@@ -3635,7 +3635,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class MethodDescriptorProto : GeneratedMessage, GeneratedMessageProtocol {
+  final public class MethodDescriptorProto : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasName:Bool = false
     public private(set) var name:String = ""
 
@@ -3975,7 +3975,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class FileOptions : ExtendableMessage, GeneratedMessageProtocol {
+  final public class FileOptions : ExtendableMessage, GeneratedMessageProtocol, Hashable {
 
 
       //Enum type declaration start 
@@ -4004,7 +4004,7 @@ public extension Google.Protobuf {
     public private(set) var hasJavaStringCheckUtf8:Bool = false
     public private(set) var javaStringCheckUtf8:Bool = false
 
-    public private(set) var optimizeFor:Google.Protobuf.FileOptions.OptimizeMode = Google.Protobuf.FileOptions.OptimizeMode.Speed
+    public private(set) var optimizeFor:FileOptions.OptimizeMode = FileOptions.OptimizeMode.Speed
     public private(set) var hasOptimizeFor:Bool = false
     public private(set) var hasGoPackage:Bool = false
     public private(set) var goPackage:String = ""
@@ -4397,7 +4397,7 @@ public extension Google.Protobuf {
               return builderResult.hasOptimizeFor
           }
       }
-      public var optimizeFor:Google.Protobuf.FileOptions.OptimizeMode {
+      public var optimizeFor:FileOptions.OptimizeMode {
           get {
               return builderResult.optimizeFor
           }
@@ -4406,7 +4406,7 @@ public extension Google.Protobuf {
               builderResult.optimizeFor = value
           }
       }
-      public func setOptimizeFor(value:Google.Protobuf.FileOptions.OptimizeMode)-> Google.Protobuf.FileOptionsBuilder {
+      public func setOptimizeFor(value:FileOptions.OptimizeMode)-> Google.Protobuf.FileOptionsBuilder {
         self.optimizeFor = value
         return self
       }
@@ -4630,7 +4630,7 @@ public extension Google.Protobuf {
 
         case 72 :
           let valueIntoptimizeFor = input.readEnum()
-          if let enumsoptimizeFor = Google.Protobuf.FileOptions.OptimizeMode(rawValue:valueIntoptimizeFor){
+          if let enumsoptimizeFor = FileOptions.OptimizeMode(rawValue:valueIntoptimizeFor){
                optimizeFor = enumsoptimizeFor
           } else {
                unknownFieldsBuilder.mergeVarintField(9, value:Int64(valueIntoptimizeFor))
@@ -4675,7 +4675,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class MessageOptions : ExtendableMessage, GeneratedMessageProtocol {
+  final public class MessageOptions : ExtendableMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasMessageSetWireFormat:Bool = false
     public private(set) var messageSetWireFormat:Bool = false
 
@@ -5006,7 +5006,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class FieldOptions : ExtendableMessage, GeneratedMessageProtocol {
+  final public class FieldOptions : ExtendableMessage, GeneratedMessageProtocol, Hashable {
 
 
       //Enum type declaration start 
@@ -5020,7 +5020,7 @@ public extension Google.Protobuf {
 
       //Enum type declaration end 
 
-    public private(set) var ctype:Google.Protobuf.FieldOptions.Ctype = Google.Protobuf.FieldOptions.Ctype.String
+    public private(set) var ctype:FieldOptions.Ctype = FieldOptions.Ctype.String
     public private(set) var hasCtype:Bool = false
     public private(set) var hasPacked:Bool = false
     public private(set) var packed:Bool = false
@@ -5238,7 +5238,7 @@ public extension Google.Protobuf {
               return builderResult.hasCtype
           }
       }
-      public var ctype:Google.Protobuf.FieldOptions.Ctype {
+      public var ctype:FieldOptions.Ctype {
           get {
               return builderResult.ctype
           }
@@ -5247,7 +5247,7 @@ public extension Google.Protobuf {
               builderResult.ctype = value
           }
       }
-      public func setCtype(value:Google.Protobuf.FieldOptions.Ctype)-> Google.Protobuf.FieldOptionsBuilder {
+      public func setCtype(value:FieldOptions.Ctype)-> Google.Protobuf.FieldOptionsBuilder {
         self.ctype = value
         return self
       }
@@ -5450,7 +5450,7 @@ public extension Google.Protobuf {
 
         case 8 :
           let valueIntctype = input.readEnum()
-          if let enumsctype = Google.Protobuf.FieldOptions.Ctype(rawValue:valueIntctype){
+          if let enumsctype = FieldOptions.Ctype(rawValue:valueIntctype){
                ctype = enumsctype
           } else {
                unknownFieldsBuilder.mergeVarintField(1, value:Int64(valueIntctype))
@@ -5486,7 +5486,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class EnumOptions : ExtendableMessage, GeneratedMessageProtocol {
+  final public class EnumOptions : ExtendableMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasAllowAlias:Bool = false
     public private(set) var allowAlias:Bool = false
 
@@ -5773,7 +5773,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class EnumValueOptions : ExtendableMessage, GeneratedMessageProtocol {
+  final public class EnumValueOptions : ExtendableMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasDeprecated:Bool = false
     public private(set) var deprecated:Bool = false
 
@@ -6016,7 +6016,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class ServiceOptions : ExtendableMessage, GeneratedMessageProtocol {
+  final public class ServiceOptions : ExtendableMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasDeprecated:Bool = false
     public private(set) var deprecated:Bool = false
 
@@ -6259,7 +6259,7 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class MethodOptions : ExtendableMessage, GeneratedMessageProtocol {
+  final public class MethodOptions : ExtendableMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasDeprecated:Bool = false
     public private(set) var deprecated:Bool = false
 
@@ -6502,12 +6502,12 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class UninterpretedOption : GeneratedMessage, GeneratedMessageProtocol {
+  final public class UninterpretedOption : GeneratedMessage, GeneratedMessageProtocol, Hashable {
 
 
     //Nested type declaration start
 
-      final public class NamePart : GeneratedMessage, GeneratedMessageProtocol {
+      final public class NamePart : GeneratedMessage, GeneratedMessageProtocol, Hashable {
         public private(set) var hasNamePart:Bool = false
         public private(set) var namePart:String = ""
 
@@ -7197,12 +7197,12 @@ public extension Google.Protobuf {
     }
   }
 
-  final public class SourceCodeInfo : GeneratedMessage, GeneratedMessageProtocol {
+  final public class SourceCodeInfo : GeneratedMessage, GeneratedMessageProtocol, Hashable {
 
 
     //Nested type declaration start
 
-      final public class Location : GeneratedMessage, GeneratedMessageProtocol {
+      final public class Location : GeneratedMessage, GeneratedMessageProtocol, Hashable {
         public private(set) var hasLeadingComments:Bool = false
         public private(set) var leadingComments:String = ""
 

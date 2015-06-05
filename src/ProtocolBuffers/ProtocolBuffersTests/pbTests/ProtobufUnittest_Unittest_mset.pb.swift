@@ -42,6 +42,15 @@ internal func == (lhs: ProtobufUnittest.TestMessageSetExtension2, rhs: ProtobufU
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
+internal func == (lhs: ProtobufUnittest.RawMessageSet, rhs: ProtobufUnittest.RawMessageSet) -> Bool {
+  if (lhs === rhs) {
+    return true
+  }
+  var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
+  fieldCheck = fieldCheck && (lhs.item == rhs.item)
+  return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
+}
+
 internal func == (lhs: ProtobufUnittest.RawMessageSet.Item, rhs: ProtobufUnittest.RawMessageSet.Item) -> Bool {
   if (lhs === rhs) {
     return true
@@ -49,15 +58,6 @@ internal func == (lhs: ProtobufUnittest.RawMessageSet.Item, rhs: ProtobufUnittes
   var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
   fieldCheck = fieldCheck && (lhs.hasTypeId == rhs.hasTypeId) && (!lhs.hasTypeId || lhs.typeId == rhs.typeId)
   fieldCheck = fieldCheck && (lhs.hasMessage_ == rhs.hasMessage_) && (!lhs.hasMessage_ || lhs.message_ == rhs.message_)
-  return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
-}
-
-internal func == (lhs: ProtobufUnittest.RawMessageSet, rhs: ProtobufUnittest.RawMessageSet) -> Bool {
-  if (lhs === rhs) {
-    return true
-  }
-  var fieldCheck:Bool = (lhs.hashValue == rhs.hashValue)
-  fieldCheck = fieldCheck && (lhs.item == rhs.item)
   return (fieldCheck && (lhs.unknownFields == rhs.unknownFields))
 }
 
@@ -95,7 +95,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestMessageSet : ExtendableMessage, GeneratedMessageProtocol {
+  final internal class TestMessageSet : ExtendableMessage, GeneratedMessageProtocol, Hashable {
     required internal init() {
          super.init()
     }
@@ -243,7 +243,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestMessageSetContainer : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class TestMessageSetContainer : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasMessageSet:Bool = false
     private(set) var messageSet:ProtobufUnittest.TestMessageSet!
     required internal init() {
@@ -451,7 +451,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestMessageSetExtension1 : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class TestMessageSetExtension1 : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasI:Bool = false
     private(set) var i:Int32 = Int32(0)
 
@@ -638,7 +638,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestMessageSetExtension2 : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class TestMessageSetExtension2 : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasStr:Bool = false
     private(set) var str:String = ""
 
@@ -825,12 +825,12 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class RawMessageSet : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class RawMessageSet : GeneratedMessage, GeneratedMessageProtocol, Hashable {
 
 
     //Nested type declaration start
 
-      final internal class Item : GeneratedMessage, GeneratedMessageProtocol {
+      final internal class Item : GeneratedMessage, GeneratedMessageProtocol, Hashable {
         private(set) var hasTypeId:Bool = false
         private(set) var typeId:Int32 = Int32(0)
 

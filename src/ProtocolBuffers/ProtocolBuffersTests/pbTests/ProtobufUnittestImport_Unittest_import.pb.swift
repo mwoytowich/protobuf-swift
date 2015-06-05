@@ -47,7 +47,7 @@ internal extension ProtobufUnittestImport {
 
   //Enum type declaration end 
 
-  final internal class ImportMessage : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class ImportMessage : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasD:Bool = false
     private(set) var d:Int32 = Int32(0)
 

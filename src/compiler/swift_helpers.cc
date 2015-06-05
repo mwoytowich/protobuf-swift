@@ -300,21 +300,23 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         result += full_name;
         return result;
     }
-
-    string ReturnedType(const string& full_name)
-    {
-        string result;
-        vector<string> splitVector = FullNameSplit(full_name);
-
-        for (int i = 0; i < splitVector.size(); i++) {
-            if (i < splitVector.size() - 1)
-            {
-                result += splitVector[i];
-                result += ".";
-            }
+    /////////////////////
+    
+    ////Workers
+    
+    string ClassNameWorker(const Descriptor* descriptor) {
+        string name = "";
+        name += FileClassPrefix(descriptor->file());
+        if (descriptor->containing_type() != NULL) {
+            name = ClassNameWorker(descriptor->containing_type());
+            name += ".";
         }
-        return result;
+        return CheckReservedNames(name + UnderscoresToCapitalizedCamelCase(descriptor->name()));
     }
+    ////
+    
+    
+    //// Packages
 
     string FullName(const vector<string> splitVector)
     {
@@ -328,27 +330,29 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
 
     string FullName(const FileDescriptor* file)
     {
-        return FullName(FullNameSplit(file->package()));
+        return FullName(FullNameSplit(file));
     }
 
-    vector<string> FullNameSplit(const string& str)
+    vector<string> FullNameSplit(const FileDescriptor* file)
     {
         const string& delimiters = ".";
-
+        string str = file->package();
+        
+        string prefix = "";//FileClassPrefix(file);  //Class prefix
+        
         vector<string> tokens;
-
+        
         string::size_type lastPos = str.find_first_not_of(delimiters, 0);
         string::size_type pos     = str.find_first_of(delimiters, lastPos);
 
         while (string::npos != pos || string::npos != lastPos)
         {
-            tokens.push_back(UnderscoresToCapitalizedCamelCase(str.substr(lastPos, pos - lastPos)));
+            tokens.push_back(prefix + UnderscoresToCapitalizedCamelCase(str.substr(lastPos, pos - lastPos)));
             lastPos = str.find_first_not_of(delimiters, pos);
             pos = str.find_first_of(delimiters, lastPos);
         }
         return tokens;
     }
-
 
     string PackageExtensionName(const vector<string> splitVector)
     {
@@ -361,54 +365,87 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         }
         return result;
     }
-
-    string ClassNameWorker(const Descriptor* descriptor) {
+    
+    //// Enums class name and returned type
+    string ClassName(const EnumDescriptor* descriptor) {
         string name;
+        name += FileClassPrefix(descriptor->file());
+        name += UnderscoresToCapitalizedCamelCase(descriptor->name());
+        return CheckReservedNames(name);
+    }
+    
+    string ClassNameReturedType(const EnumDescriptor* descriptor) {
+        
+        string name = PackageName(descriptor);
+
         if (descriptor->containing_type() != NULL) {
             name = ClassNameWorker(descriptor->containing_type());
             name += ".";
         }
+   
+        name += FileClassPrefix(descriptor->file());
+        name += CheckReservedNames(UnderscoresToCapitalizedCamelCase(descriptor->name()));
+        return CheckReservedNames(name);
+        
+    }
+    
+    string PackageName(const EnumDescriptor* descriptor)
+    {
+        string name = "";
+        if (descriptor->containing_type() != NULL) {
+            name = PackageName(descriptor->containing_type());
+        }
         else
         {
-            name += CheckReservedNames(FullName(descriptor->file()));
+            name = FullName(descriptor->file());
         }
-        return CheckReservedNames(name + descriptor->name());
+        return name;
     }
+    
+    //// Messages class name and returned type
+    string ClassName(const Descriptor* descriptor) {
+        string name;
+        name += FileClassPrefix(descriptor->file());
+        name += UnderscoresToCapitalizedCamelCase(descriptor->name());
+        return CheckReservedNames(name);
+    }
+    
+    string ClassNameReturedType(const Descriptor* descriptor) {
+        string name = PackageName(descriptor);
+        if (descriptor->containing_type() != NULL) {
+            name += ClassNameWorker(descriptor->containing_type());
+            name += ".";
+        }
 
+        name += FileClassPrefix(descriptor->file());
+        name += CheckReservedNames(UnderscoresToCapitalizedCamelCase(descriptor->name()));
+
+        return CheckReservedNames(name);
+    }
+    
+    string PackageName(const Descriptor* descriptor)
+    {
+        string name = "";
+        if (descriptor->containing_type() != NULL) {
+            name = PackageName(descriptor->containing_type());
+        }
+        else
+        {
+            name = FullName(descriptor->file());
+        }
+        return name;
+    }
+    ////
+    
     string ClassNameWorkerExtensions(const Descriptor* descriptor) {
         string name;
         if (descriptor->containing_type() != NULL) {
             name = ClassNameWorkerExtensions(descriptor->containing_type());
             name += "";
         }
-//        else
-//        {
-//            name += CheckReservedNames(name + descriptor->name());
-//        }
         return CheckReservedNames(name + descriptor->name());
     }
-
-
-    string ClassNameWorker(const EnumDescriptor* descriptor) {
-        string name;
-        if (descriptor->containing_type() != NULL) {
-            name = ClassNameWorker(descriptor->containing_type());
-            name += ".";
-        }
-        else
-        {
-            name += CheckReservedNames(FullName(descriptor->file()));
-        }
-        return CheckReservedNames(name + UnderscoresToCapitalizedCamelCase(descriptor->name()));
-    }
-
-
-    string ClassName(const Descriptor* descriptor) {
-        string name;
-        name += FileClassPrefix(descriptor->file());
-        name += ClassNameWorker(descriptor);
-        return CheckReservedNames(name);
-    }
+    
     string ClassNameExtensions(const Descriptor* descriptor) {
         string name;
         name += FileClassPrefix(descriptor->file());
@@ -416,19 +453,6 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         return CheckReservedNames(name);
     }
 
-    string ClassNameMessage(const Descriptor* descriptor) {
-        string name;
-        name += FileClassPrefix(descriptor->file());
-        if (descriptor->containing_type() != NULL) {
-
-            return CheckReservedNames(descriptor->name());
-        }
-        else
-        {
-            name += descriptor->name();
-        }
-        return CheckReservedNames(name);
-    }
 
 
     string ClassNameOneof(const OneofDescriptor* descriptor) {
@@ -448,15 +472,6 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         }
         return false;
     }
-
-
-    string ClassName(const EnumDescriptor* descriptor) {
-        string name;
-        name += FileClassPrefix(descriptor->file());
-        name += ClassNameWorker(descriptor);
-        return CheckReservedNames(name);
-    }
-
 
     string ClassName(const ServiceDescriptor* descriptor) {
         string name;
@@ -658,7 +673,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
             case FieldDescriptor::CPPTYPE_ENUM:
                 return EnumValueName(field->default_value_enum());
             case FieldDescriptor::CPPTYPE_MESSAGE:
-                return ClassName(field->message_type()) + "()";
+                return ClassNameReturedType(field->message_type()) + "()";
         }
 
         GOOGLE_LOG(FATAL) << "Can't get here.";

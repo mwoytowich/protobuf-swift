@@ -33,7 +33,7 @@ internal extension ProtobufUnittestImport {
     }
   }
 
-  final internal class PublicImportMessageLite : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class PublicImportMessageLite : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasE:Bool = false
     private(set) var e:Int32 = Int32(0)
 

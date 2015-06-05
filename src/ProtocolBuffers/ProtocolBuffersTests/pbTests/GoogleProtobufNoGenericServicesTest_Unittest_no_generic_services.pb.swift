@@ -56,7 +56,7 @@ internal extension Google.Protobuf.NoGenericServicesTest {
 
   //Enum type declaration end 
 
-  final internal class TestMessage : ExtendableMessage, GeneratedMessageProtocol {
+  final internal class TestMessage : ExtendableMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasA:Bool = false
     private(set) var a:Int32 = Int32(0)
 

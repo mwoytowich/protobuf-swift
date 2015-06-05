@@ -57,7 +57,7 @@ public extension Google.Protobuf {
 
   //Enum type declaration end 
 
-  final public class SwiftFileOptions : GeneratedMessage, GeneratedMessageProtocol {
+  final public class SwiftFileOptions : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     public private(set) var hasClassPrefix:Bool = false
     public private(set) var classPrefix:String = ""
 

@@ -33,7 +33,7 @@ internal extension Bar {
     }
   }
 
-  final internal class Foo : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class Foo : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasHello:Bool = false
     private(set) var hello:String = ""
 

@@ -72,7 +72,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestOptimizedForSize : ExtendableMessage, GeneratedMessageProtocol {
+  final internal class TestOptimizedForSize : ExtendableMessage, GeneratedMessageProtocol, Hashable {
 
 
     //OneOf declaration start
@@ -111,7 +111,7 @@ internal extension ProtobufUnittest {
     }
     //OneOf declaration end
 
-    private var storageFoo:ProtobufUnittest.TestOptimizedForSize.Foo =  ProtobufUnittest.TestOptimizedForSize.Foo.FooOneOfNotSet
+    private var storageFoo:TestOptimizedForSize.Foo =  TestOptimizedForSize.Foo.FooOneOfNotSet
     private(set) var hasI:Bool = false
     private(set) var i:Int32 = Int32(0)
 
@@ -119,7 +119,7 @@ internal extension ProtobufUnittest {
     private(set) var msg:ProtobufUnittest.ForeignMessage!
     private(set) var hasIntegerField:Bool {
           get {
-               if ProtobufUnittest.TestOptimizedForSize.Foo.getIntegerField(storageFoo) == nil {
+               if TestOptimizedForSize.Foo.getIntegerField(storageFoo) == nil {
                    return false
                }
                return true
@@ -129,15 +129,15 @@ internal extension ProtobufUnittest {
     }
     private(set) var integerField:Int32!{
          get {
-              return ProtobufUnittest.TestOptimizedForSize.Foo.getIntegerField(storageFoo)
+              return TestOptimizedForSize.Foo.getIntegerField(storageFoo)
          }
          set (newvalue) {
-              storageFoo = ProtobufUnittest.TestOptimizedForSize.Foo.IntegerField(newvalue)
+              storageFoo = TestOptimizedForSize.Foo.IntegerField(newvalue)
          }
     }
     private(set) var hasStringField:Bool {
           get {
-               if ProtobufUnittest.TestOptimizedForSize.Foo.getStringField(storageFoo) == nil {
+               if TestOptimizedForSize.Foo.getStringField(storageFoo) == nil {
                    return false
                }
                return true
@@ -147,10 +147,10 @@ internal extension ProtobufUnittest {
     }
     private(set) var stringField:String!{
          get {
-              return ProtobufUnittest.TestOptimizedForSize.Foo.getStringField(storageFoo)
+              return TestOptimizedForSize.Foo.getStringField(storageFoo)
          }
          set (newvalue) {
-              storageFoo = ProtobufUnittest.TestOptimizedForSize.Foo.StringField(newvalue)
+              storageFoo = TestOptimizedForSize.Foo.StringField(newvalue)
          }
     }
     internal class func testExtension() -> ConcreateExtensionField {
@@ -490,7 +490,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestRequiredOptimizedForSize : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class TestRequiredOptimizedForSize : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasX:Bool = false
     private(set) var x:Int32 = Int32(0)
 
@@ -677,7 +677,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestOptionalOptimizedForSize : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class TestOptionalOptimizedForSize : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasO:Bool = false
     private(set) var o:ProtobufUnittest.TestRequiredOptimizedForSize!
     required internal init() {

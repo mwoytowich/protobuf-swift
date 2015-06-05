@@ -34,7 +34,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestLiteImportsNonlite : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class TestLiteImportsNonlite : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasMessage_:Bool = false
     private(set) var message_:ProtobufUnittest.TestAllTypes!
     required internal init() {

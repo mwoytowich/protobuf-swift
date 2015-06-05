@@ -35,7 +35,7 @@ internal extension ProtobufUnittest {
     }
   }
 
-  final internal class TestEmbedOptimizedForSize : GeneratedMessage, GeneratedMessageProtocol {
+  final internal class TestEmbedOptimizedForSize : GeneratedMessage, GeneratedMessageProtocol, Hashable {
     private(set) var hasOptionalMessage:Bool = false
     private(set) var optionalMessage:ProtobufUnittest.TestOptimizedForSize!
     private(set) var repeatedMessage:Array<ProtobufUnittest.TestOptimizedForSize>  = Array<ProtobufUnittest.TestOptimizedForSize>()

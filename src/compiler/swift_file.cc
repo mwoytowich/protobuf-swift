@@ -46,14 +46,10 @@ namespace google { namespace protobuf { namespace compiler {namespace swift {
     void FileGenerator::GenerateSource(io::Printer* printer) {
         FileGenerator file_generator(file_);
 
-        vector<string> tokens = FullNameSplit(file_->package());
+        vector<string> tokens = FullNameSplit(file_);
         
         
         for (int i = 0; i < file_->message_type_count(); i++) {
-            
-            for (int j = 0; j < file_->message_type(i)->nested_type_count(); j++) {
-                MessageGenerator(file_->message_type(i)->nested_type(j)).GenerateMessageIsEqualSource(printer);
-            }
             MessageGenerator(file_->message_type(i)).GenerateMessageIsEqualSource(printer);
         }
         
@@ -172,6 +168,8 @@ namespace google { namespace protobuf { namespace compiler {namespace swift {
                        "\n"
                        "// @@protoc_insertion_point(global_scope)\n");
     }
+    
+    
 }  // namespace swift
 }  // namespace compiler
 }  // namespace protobuf
